@@ -1,0 +1,48 @@
+[tool.poetry]
+name = "mpl_table"
+version = "0.1.0"
+description = "Create custom table using matplotlib."
+authors = ["George Lenton <georgelenton@gmail.com>"]
+license = "MIT"
+readme = "README.md"
+homepage = "https://github.com/geo7/mpl_table"
+keywords = ['matplotlib', 'table', 'custom', 'heatmap']
+
+
+[tool.poetry.dependencies]
+python = "^3.8"
+black = "^21.10b0"
+pandas = "^1.3.4"
+matplotlib = "^3.4.3"
+pytest-mpl = "^0.13"
+
+[tool.poetry.dev-dependencies]
+ipython = "^7.29.0"
+jupyter = "^1.0.0"
+jupyterlab = "^3.2.2"
+nb-black = "^1.0.7"
+pyprojroot = "^0.2.0"
+pytest = "^5.2"
+pre-commit = "^2.16.0"
+flake8 = "^4.0.1"
+pylint = "^2.12.2"
+isort = "^5.10.1"
+mypy = "^0.910"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.pylint."MESSAGES CONTROL"]
+max-locals = 20
+disable = [
+    "missing-module-docstring",
+    "missing-class-docstring",
+    "missing-function-docstring",
+    "too-few-public-methods", # dataclasses.
+    "too-many-arguments",
+]
+good-names = [
+    "ax",
+    "fh",
+]
