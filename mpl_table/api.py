@@ -148,8 +148,8 @@ def plot_row(  # pylint: disable=too-many-locals
     y_value: float,
     column_widths: list[float],
     column_heights: list[float],
-    color_list: list[str],
-    value_list: list[str],
+    colors: list[str],
+    values: list[str],
     font_color: list[str],
     display_offset: list[float],
     font_weight: list[str],
@@ -166,8 +166,8 @@ def plot_row(  # pylint: disable=too-many-locals
 
     info_data = pd.DataFrame(
         {
-            "cell_color": color_list,
-            "cell_value": value_list,
+            "cell_color": colors,
+            "cell_value": values,
             "column_width": column_widths,
             "column_height": column_heights,
             # Don't need the last element from this array - want to have the x_loc as the
@@ -267,17 +267,19 @@ def table_with_row_meanings(
         default_params.spacing.value_disp_offset
     ] * (format_dataframe.shape[1] - 1)
 
+    # All value columns have text alignment center except for the row_header column,
+    # which are left aligned.
     text_align = ["left"] + ["center"] * (percentage_dataframe.shape[1] - 1)
 
     for row_i, header_val in zip(row_indices, header_row_values):
         # Lot of if's here as the heading row (with column names) has different
         # formatting to the rest... there's probably a cleaner way of going about this.
-        value_list = (
+        values = (
             percentage_dataframe.iloc[row_i, :].to_list()
             if not header_val
             else list(percentage_dataframe.columns)
         )
-        cell_color_list = (
+        cell_colors = (
             format_dataframe.iloc[row_i, :].to_list()
             if not header_val
             else [default_params.colors.color_heading for _ in percentage_dataframe]
@@ -287,18 +289,17 @@ def table_with_row_meanings(
             if not header_val
             else default_params.colors.color_heading_font
         )
-
         font_size = (
             default_params.fontsizes.fontsize_table
             if not header_val
             else default_params.fontsizes.fontsize_heading
         )
-
         font_weight = (
             ["normal"] + (["bold"] * (percentage_dataframe.shape[1] - 1))
             if not header_val
             else ["bold"] * percentage_dataframe.shape[1]
         )
+
         plot_row(
             ax=ax,
             column_widths=column_widths,
@@ -307,8 +308,8 @@ def table_with_row_meanings(
                 row_i * default_params.cell_sizes.height
                 + default_params.spacing.spacing_row * row_i
             ),
-            color_list=cell_color_list,
-            value_list=value_list,
+            colors=cell_colors,
+            values=values,
             font_color=font_color,
             cell_gap=default_params.spacing.spacing_col,
             fontsize=font_size,
