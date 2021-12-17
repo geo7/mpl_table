@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "mpl_table"
-version = "0.1.0"
+version = "0.1.1"
 description = "Create custom table using matplotlib."
 authors = ["George Lenton <georgelenton@gmail.com>"]
 license = "MIT"
