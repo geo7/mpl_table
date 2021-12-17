@@ -212,17 +212,17 @@ def plot_row(  # pylint: disable=too-many-locals
     return ax
 
 
-def table_with_row_meanings(
+def table_with_row_headers(
     *,
     format_dataframe: pd.DataFrame,
     percentage_dataframe: pd.DataFrame,
     font_color_dataframe: pd.DataFrame | None = None,
     ax: plt.Axes,
     default_params: DefaultParams = DefaultParams(),
-    # Currently need to pass the row_meaning column as there are some things handled
-    # differently depending on whether it's the row_meaning column or not. Though _could_
+    # Currently need to pass the row_header column as there are some things handled
+    # differently depending on whether it's the row_header column or not. Though _could_
     # just assume that the data is passed in the correct form.
-    row_meaning: str,
+    row_header: str,
 ) -> plt.Axes:
     """
     Create custom heatmap.
@@ -236,7 +236,7 @@ def table_with_row_meanings(
     """
     # Simple checks on the input data.
     assert all(percentage_dataframe.columns == format_dataframe.columns)
-    assert percentage_dataframe.columns[0] == row_meaning
+    assert percentage_dataframe.columns[0] == row_header
 
     # Should consider making this access more consistent as there's currently the case of
     # there being a row from a dataframe or something else when there's a header row

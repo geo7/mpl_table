@@ -53,17 +53,17 @@ def sample_dataframes():
     ]
     cell_values = (
         cell_values.applymap(lambda x: f"{x}%\n({np_random.integers(0,100)}% total)")
-        .assign(row_meaning=meaning_column)
-        .set_index("row_meaning")
+        .assign(row_header=meaning_column)
+        .set_index("row_header")
         .reset_index()
     )
     df_cell_colors = (
-        df_cell_colors.assign(row_meaning="#f2f2f2")
-        .set_index("row_meaning")
+        df_cell_colors.assign(row_header="#f2f2f2")
+        .set_index("row_header")
         .reset_index()
     )
     font_color = (
-        font_color.assign(row_meaning="black").set_index("row_meaning").reset_index()
+        font_color.assign(row_header="black").set_index("row_header").reset_index()
     )
     return df_cell_colors, cell_values, font_color
 
@@ -76,11 +76,11 @@ def test_table_image(
 ) -> Figure:
     fig, ax = plt.subplots(figsize=(35, 10))
     default = api.DefaultParams()
-    ax = mpl_table.table_with_row_meanings(
+    ax = mpl_table.table_with_row_headers(
         ax=ax,
         format_dataframe=cell_colors,
         percentage_dataframe=percentages,
-        row_meaning="row_meaning",
+        row_header="row_header",
         font_color_dataframe=text_color,
         default_params=default,
     )
@@ -94,11 +94,11 @@ def test_table_image_no_font_color_df(
 ) -> Figure:
     fig, ax = plt.subplots(figsize=(35, 10))
     default = api.DefaultParams()
-    ax = mpl_table.table_with_row_meanings(
+    ax = mpl_table.table_with_row_headers(
         ax=ax,
         format_dataframe=cell_colors,
         percentage_dataframe=percentages,
-        row_meaning="row_meaning",
+        row_header="row_header",
         default_params=default,
     )
     return fig
