@@ -65,7 +65,7 @@ class DefaultParams:
     plot_values = PlotValues()
 
 
-class SoftCell:  # pylint: disable=too-many-instance-attributes
+class TableCell:  # pylint: disable=too-many-instance-attributes
     """Class representing a cell within the output table."""
 
     def __init__(
@@ -162,7 +162,7 @@ def plot_row(  # pylint: disable=too-many-locals
     relating to the
 
     """
-    computed_cells: list[SoftCell] = []
+    computed_cells: list[TableCell] = []
 
     info_data = pd.DataFrame(
         {
@@ -186,7 +186,7 @@ def plot_row(  # pylint: disable=too-many-locals
         # account for a bit of spacing around the cells.
         cell_width_gapped = row.column_width - cell_gap
 
-        soft_cell = SoftCell(
+        soft_cell = TableCell(
             width=cell_width_gapped,
             height=row.column_height,
             x_pos=row.cell_x_loc,
