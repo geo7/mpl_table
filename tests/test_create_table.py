@@ -75,7 +75,7 @@ def test_table_image(
     text_color,
 ) -> Figure:
     fig, ax = plt.subplots(figsize=(35, 10))
-    default = api.DefaultParams()
+    default = api.PlotParams()
     ax = mpl_table.table_with_row_headers(
         ax=ax,
         format_dataframe=cell_colors,
@@ -93,7 +93,7 @@ def test_table_image_no_font_color_df(
     percentages,
 ) -> Figure:
     fig, ax = plt.subplots(figsize=(35, 10))
-    default = api.DefaultParams()
+    default = api.PlotParams()
     ax = mpl_table.table_with_row_headers(
         ax=ax,
         format_dataframe=cell_colors,

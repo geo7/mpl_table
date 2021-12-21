@@ -57,7 +57,7 @@ class PlotValues:
 
 
 @dataclass
-class DefaultParams:
+class PlotParams:
     colors = Colors()
     fontsizes = FontSize()
     spacing = Spacing()
@@ -218,7 +218,7 @@ def table_with_row_headers(
     percentage_dataframe: pd.DataFrame,
     font_color_dataframe: pd.DataFrame | None = None,
     ax: plt.Axes,
-    default_params: DefaultParams = DefaultParams(),
+    default_params: PlotParams = PlotParams(),
     # Currently need to pass the row_header column as there are some things handled
     # differently depending on whether it's the row_header column or not. Though _could_
     # just assume that the data is passed in the correct form.
