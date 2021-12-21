@@ -219,8 +219,8 @@ def table_with_row_headers(
     ax: plt.Axes,
     default_params: PlotParams = PlotParams(),
     # Currently need to pass the row_header column as there are some things handled
-    # differently depending on whether it's the row_header column or not. Though _could_
-    # just assume that the data is passed in the correct form.
+    # differently depending on whether it's the row_header column or not (row_header
+    # column will typically have different dimensions to the rest of the columns).
     row_header: str,
 ) -> plt.Axes:
     """
@@ -234,8 +234,21 @@ def table_with_row_headers(
     containing text descriptions of the values within those rows.
     """
     # Simple checks on the input data.
-    assert all(percentage_dataframe.columns == format_dataframe.columns)
-    assert percentage_dataframe.columns[0] == row_header
+    if not all(percentage_dataframe.columns == format_dataframe.columns):
+        raise ValueError(
+            (
+                "Expect `percentage_dataframe.columns"
+                " == format_dataframe.columns`, "
+                f"percentage_dataframe.columns : {percentage_dataframe.columns}, "
+                f"format_dataframe.columns : {format_dataframe.columns}"
+            )
+        )
+    if not percentage_dataframe.columns[0] == row_header:
+        raise ValueError(
+            "Expect the first column to be the row_header column, "
+            f"row_header given is {row_header}, first"
+            f" column is {percentage_dataframe.columns[0]}"
+        )
 
     # Should consider making this access more consistent as there's currently the case of
     # there being a row from a dataframe or something else when there's a header row
