@@ -181,7 +181,6 @@ def plot_row(  # pylint: disable=too-many-locals
         }
     )
 
-    # iterrows() seemed like a mild improvement on zip(...) with many lists.
     for row in info_data.itertuples():
         # account for a bit of spacing around the cells.
         cell_width_gapped = row.column_width - cell_gap
