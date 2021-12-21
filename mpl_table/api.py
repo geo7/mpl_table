@@ -213,9 +213,9 @@ def plot_row(  # pylint: disable=too-many-locals
 
 def table_with_row_headers(
     *,
-    format_dataframe: pd.DataFrame,
-    percentage_dataframe: pd.DataFrame,
-    font_color_dataframe: pd.DataFrame | None = None,
+    cell_colors: pd.DataFrame,
+    cell_values: pd.DataFrame,
+    font_colors: pd.DataFrame | None = None,
     ax: plt.Axes,
     default_params: PlotParams = PlotParams(),
     # Currently need to pass the row_header column as there are some things handled
@@ -224,7 +224,7 @@ def table_with_row_headers(
     row_header: str,
 ) -> plt.Axes:
     """
-    Create custom heatmap.
+    Create custom table.
 
     If the default settings aren't appropriate there might be some need to adjust the
     default parameters, for example if the text column width is too large you might do
@@ -234,20 +234,20 @@ def table_with_row_headers(
     containing text descriptions of the values within those rows.
     """
     # Simple checks on the input data.
-    if not all(percentage_dataframe.columns == format_dataframe.columns):
+    if not all(cell_values.columns == cell_colors.columns):
         raise ValueError(
             (
-                "Expect `percentage_dataframe.columns"
-                " == format_dataframe.columns`, "
-                f"percentage_dataframe.columns : {percentage_dataframe.columns}, "
-                f"format_dataframe.columns : {format_dataframe.columns}"
+                "Expect `cell_values.columns"
+                " == cell_colors.columns`, "
+                f"cell_values.columns : {cell_values.columns}, "
+                f"cell_colors.columns : {cell_colors.columns}"
             )
         )
-    if not percentage_dataframe.columns[0] == row_header:
+    if not cell_values.columns[0] == row_header:
         raise ValueError(
             "Expect the first column to be the row_header column, "
             f"row_header given is {row_header}, first"
-            f" column is {percentage_dataframe.columns[0]}"
+            f" column is {cell_values.columns[0]}"
         )
 
     # Should consider making this access more consistent as there's currently the case of
@@ -255,61 +255,63 @@ def table_with_row_headers(
     # instead. Could just have the header row as part of a dataframe/matrix instead and
     # then an index or something which determined what type of row it was? Though that
     # might make things more clunky usage wise.
-    if font_color_dataframe is None:
-        font_color_dataframe = format_dataframe.applymap(
+    if font_colors is None:
+        font_colors = cell_colors.applymap(
             lambda _: default_params.colors.color_table_font
         )
 
-    column_widths = [default_params.cell_sizes.text_col_width] + [
+    # height/width of cells columns is consistent across all rows - typically the
+    # row_header column will be wider to accomodate the explanation.
+    column_widths : list[float] = [default_params.cell_sizes.text_col_width] + [
         default_params.cell_sizes.numb_col_width
-    ] * (len(percentage_dataframe.columns) - 1)
-    column_heights = [default_params.cell_sizes.text_col_height] + [
+    ] * (len(cell_values.columns) - 1)
+    column_heights : list[float] = [default_params.cell_sizes.text_col_height] + [
         default_params.cell_sizes.numb_col_height
-    ] * (len(percentage_dataframe.columns) - 1)
+    ] * (len(cell_values.columns) - 1)
 
     # Want an index for all rows as well as the header row.
-    row_indices = list(range(len(format_dataframe) + 1))
+    row_indices = list(range(len(cell_colors) + 1))
     # Final row plotted is the header row.
-    header_row_values = [False] * len(format_dataframe) + [True]
+    header_row_values = [False] * len(cell_colors) + [True]
 
     # Each cell value is offset so that text isn't plotted right on the edge - text cell
     # (first column) it left aligned, whereas the others are centered. This doesn't
     # change if it's a heading or a table value.
     display_offset = [default_params.spacing.txt_disp_offset] + [
         default_params.spacing.value_disp_offset
-    ] * (format_dataframe.shape[1] - 1)
+    ] * (cell_colors.shape[1] - 1)
 
     # All value columns have text alignment center except for the row_header column,
     # which are left aligned.
-    text_align = ["left"] + ["center"] * (percentage_dataframe.shape[1] - 1)
+    text_align = ["left"] + ["center"] * (cell_values.shape[1] - 1)
 
     for row_i, header_val in zip(row_indices, header_row_values):
         # Lot of if's here as the heading row (with column names) has different
         # formatting to the rest... there's probably a cleaner way of going about this.
-        values = (
-            percentage_dataframe.iloc[row_i, :].to_list()
+        row_values = (
+            cell_values.iloc[row_i, :].to_list()
             if not header_val
-            else list(percentage_dataframe.columns)
+            else list(cell_values.columns)
         )
-        cell_colors = (
-            format_dataframe.iloc[row_i, :].to_list()
+        row_colors = (
+            cell_colors.iloc[row_i, :].to_list()
             if not header_val
-            else [default_params.colors.color_heading for _ in percentage_dataframe]
+            else [default_params.colors.color_heading for _ in cell_values]
         )
-        font_color = (
-            font_color_dataframe.iloc[row_i, :].to_list()
+        row_font_color = (
+            font_colors.iloc[row_i, :].to_list()
             if not header_val
             else default_params.colors.color_heading_font
         )
-        font_size = (
+        row_font_size = (
             default_params.fontsizes.fontsize_table
             if not header_val
             else default_params.fontsizes.fontsize_heading
         )
-        font_weight = (
-            ["normal"] + (["bold"] * (percentage_dataframe.shape[1] - 1))
+        row_font_weight = (
+            ["normal"] + (["bold"] * (cell_values.shape[1] - 1))
             if not header_val
-            else ["bold"] * percentage_dataframe.shape[1]
+            else ["bold"] * cell_values.shape[1]
         )
 
         plot_row(
@@ -320,14 +322,14 @@ def table_with_row_headers(
                 row_i * default_params.cell_sizes.height
                 + default_params.spacing.spacing_row * row_i
             ),
-            colors=cell_colors,
-            values=values,
-            font_color=font_color,
+            colors=row_colors,
+            values=row_values,
+            font_color=row_font_color,
             cell_gap=default_params.spacing.spacing_col,
-            fontsize=font_size,
+            fontsize=row_font_size,
             patch_alpha=default_params.plot_values.cell_alpha,
             display_offset=display_offset,
-            font_weight=font_weight,
+            font_weight=row_font_weight,
             text_align=text_align,
         )
 

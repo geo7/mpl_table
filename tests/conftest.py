@@ -13,7 +13,7 @@ def cell_colors() -> pd.DataFrame:
 
 
 @pytest.fixture
-def percentages() -> pd.DataFrame:
+def cell_values() -> pd.DataFrame:
     with importlib.resources.path(resources, "percentages.csv") as fh:
         return pd.read_csv(fh)
 

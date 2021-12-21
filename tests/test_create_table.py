@@ -15,6 +15,7 @@ import mpl_table
 from mpl_table import api
 
 
+
 def sample_dataframes():
     """
     Create sample dataframes for testing.
@@ -71,17 +72,17 @@ def sample_dataframes():
 @pytest.mark.mpl_image_compare
 def test_table_image(
     cell_colors,
-    percentages,
+    cell_values,
     text_color,
 ) -> Figure:
     fig, ax = plt.subplots(figsize=(35, 10))
     default = api.PlotParams()
     ax = mpl_table.table_with_row_headers(
         ax=ax,
-        format_dataframe=cell_colors,
-        percentage_dataframe=percentages,
+        cell_colors=cell_colors,
+        cell_values=cell_values,
         row_header="row_header",
-        font_color_dataframe=text_color,
+        font_colors=text_color,
         default_params=default,
     )
     return fig
@@ -90,14 +91,14 @@ def test_table_image(
 @pytest.mark.mpl_image_compare
 def test_table_image_no_font_color_df(
     cell_colors,
-    percentages,
+    cell_values,
 ) -> Figure:
     fig, ax = plt.subplots(figsize=(35, 10))
     default = api.PlotParams()
     ax = mpl_table.table_with_row_headers(
         ax=ax,
-        format_dataframe=cell_colors,
-        percentage_dataframe=percentages,
+        cell_colors=cell_colors,
+        cell_values=cell_values,
         row_header="row_header",
         default_params=default,
     )
