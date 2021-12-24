@@ -15,7 +15,6 @@ import mpl_table
 from mpl_table import api
 
 
-
 def sample_dataframes():
     """
     Create sample dataframes for testing.

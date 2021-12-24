@@ -262,10 +262,10 @@ def table_with_row_headers(
 
     # height/width of cells columns is consistent across all rows - typically the
     # row_header column will be wider to accomodate the explanation.
-    column_widths : list[float] = [default_params.cell_sizes.text_col_width] + [
+    column_widths: list[float] = [default_params.cell_sizes.text_col_width] + [
         default_params.cell_sizes.numb_col_width
     ] * (len(cell_values.columns) - 1)
-    column_heights : list[float] = [default_params.cell_sizes.text_col_height] + [
+    column_heights: list[float] = [default_params.cell_sizes.text_col_height] + [
         default_params.cell_sizes.numb_col_height
     ] * (len(cell_values.columns) - 1)
 
