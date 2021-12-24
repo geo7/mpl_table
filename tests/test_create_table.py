@@ -82,7 +82,7 @@ def test_table_image(
         cell_values=cell_values,
         row_header="row_header",
         font_colors=text_color,
-        default_params=default,
+        plot_params=default,
     )
     return fig
 
@@ -99,6 +99,6 @@ def test_table_image_no_font_color_df(
         cell_colors=cell_colors,
         cell_values=cell_values,
         row_header="row_header",
-        default_params=default,
+        plot_params=default,
     )
     return fig

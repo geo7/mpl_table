@@ -217,7 +217,7 @@ def table_with_row_headers(
     cell_values: pd.DataFrame,
     font_colors: pd.DataFrame | None = None,
     ax: plt.Axes,
-    default_params: PlotParams = PlotParams(),
+    plot_params: PlotParams = PlotParams(),
     # Currently need to pass the row_header column as there are some things handled
     # differently depending on whether it's the row_header column or not (row_header
     # column will typically have different dimensions to the rest of the columns).
@@ -257,16 +257,16 @@ def table_with_row_headers(
     # might make things more clunky usage wise.
     if font_colors is None:
         font_colors = cell_colors.applymap(
-            lambda _: default_params.colors.color_table_font
+            lambda _: plot_params.colors.color_table_font
         )
 
     # height/width of cells columns is consistent across all rows - typically the
     # row_header column will be wider to accomodate the explanation.
-    column_widths: list[float] = [default_params.cell_sizes.text_col_width] + [
-        default_params.cell_sizes.numb_col_width
+    column_widths: list[float] = [plot_params.cell_sizes.text_col_width] + [
+        plot_params.cell_sizes.numb_col_width
     ] * (len(cell_values.columns) - 1)
-    column_heights: list[float] = [default_params.cell_sizes.text_col_height] + [
-        default_params.cell_sizes.numb_col_height
+    column_heights: list[float] = [plot_params.cell_sizes.text_col_height] + [
+        plot_params.cell_sizes.numb_col_height
     ] * (len(cell_values.columns) - 1)
 
     # Want an index for all rows as well as the header row.
@@ -277,8 +277,8 @@ def table_with_row_headers(
     # Each cell value is offset so that text isn't plotted right on the edge - text cell
     # (first column) it left aligned, whereas the others are centered. This doesn't
     # change if it's a heading or a table value.
-    display_offset = [default_params.spacing.txt_disp_offset] + [
-        default_params.spacing.value_disp_offset
+    display_offset = [plot_params.spacing.txt_disp_offset] + [
+        plot_params.spacing.value_disp_offset
     ] * (cell_colors.shape[1] - 1)
 
     # All value columns have text alignment center except for the row_header column,
@@ -296,17 +296,17 @@ def table_with_row_headers(
         row_colors = (
             cell_colors.iloc[row_i, :].to_list()
             if not header_val
-            else [default_params.colors.color_heading for _ in cell_values]
+            else [plot_params.colors.color_heading for _ in cell_values]
         )
         row_font_color = (
             font_colors.iloc[row_i, :].to_list()
             if not header_val
-            else default_params.colors.color_heading_font
+            else plot_params.colors.color_heading_font
         )
         row_font_size = (
-            default_params.fontsizes.fontsize_table
+            plot_params.fontsizes.fontsize_table
             if not header_val
-            else default_params.fontsizes.fontsize_heading
+            else plot_params.fontsizes.fontsize_heading
         )
         row_font_weight = (
             ["normal"] + (["bold"] * (cell_values.shape[1] - 1))
@@ -319,15 +319,15 @@ def table_with_row_headers(
             column_widths=column_widths,
             column_heights=column_heights,
             y_value=(
-                row_i * default_params.cell_sizes.height
-                + default_params.spacing.spacing_row * row_i
+                row_i * plot_params.cell_sizes.height
+                + plot_params.spacing.spacing_row * row_i
             ),
             colors=row_colors,
             values=row_values,
             font_color=row_font_color,
-            cell_gap=default_params.spacing.spacing_col,
+            cell_gap=plot_params.spacing.spacing_col,
             fontsize=row_font_size,
-            patch_alpha=default_params.plot_values.cell_alpha,
+            patch_alpha=plot_params.plot_values.cell_alpha,
             display_offset=display_offset,
             font_weight=row_font_weight,
             text_align=text_align,
