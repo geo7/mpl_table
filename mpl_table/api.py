@@ -1,4 +1,4 @@
-"""Create heatmap table."""
+"""Create table using Matplotlib."""
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -13,16 +13,15 @@ import pandas as pd
 # Default parameters.
 @dataclass
 class Colors:
-    color_empty_cell = "#f2f2f2"
-    color_heading = "red"
-    color_heading_font = "white"
-    color_table_font = "black"
+    heading_cell = "red"
+    heading_font = "white"
+    table_font = "black"
 
 
 @dataclass
 class FontSize:
-    fontsize_heading = 25
-    fontsize_table = 18
+    heading = 25
+    table = 18
 
 
 @dataclass
@@ -33,19 +32,21 @@ class FontSettings:
 
 @dataclass
 class Spacing:
-    spacing_row = 0.03
-    spacing_col = 0.01
-    # These are offsets for different column types - if it's a text column the text
-    # should be flush to the left of the cell, whereas the others (percentages within the
-    # rest of the data) will be centered within the cell rather than left aligned.
+    row = 0.03
+    col = 0.01
+    # These are offsets for different column types - if it's a row_header column the text
+    # should be flush to the left of the cell, whereas the others (eg percentages within
+    # the rest of the data) will be centered within the cell rather than left aligned.
     txt_disp_offset = 0.02
     value_disp_offset = 0.5
 
 
 @dataclass
 class CellSizes:
-    text_col_width = 1.0
-    text_col_height = 0.5
+    row_header_col_width = 1.0
+    # Not sure there would ever be any sense in there being different heights for the
+    # row_header and other cells here, it would render pretty oddly as a table.
+    row_header_col_height = 0.5
     numb_col_height = 0.5
     numb_col_width = 0.4
     height = 0.5
@@ -53,6 +54,8 @@ class CellSizes:
 
 @dataclass
 class PlotValues:
+    # Feel there's a better name than "PlotValues" for this, "CellValues" might be
+    # clearer.
     cell_alpha = 0.85
 
 
@@ -226,12 +229,11 @@ def table_with_row_headers(
     """
     Create custom table.
 
-    If the default settings aren't appropriate there might be some need to adjust the
-    default parameters, for example if the text column width is too large you might do
-    something similar to:
+    Adjust `plot_params` if the default settings aren't suitable.
 
-    Assumes that the dataframe is structured so that the first column to plot is a column
-    containing text descriptions of the values within those rows.
+    Assumes that the first column of the dataframes contain the row_header information.
+    Where a row_header is typically a sentance or so explaining what the row within the
+    table represents.
     """
     # Simple checks on the input data.
     if not all(cell_values.columns == cell_colors.columns):
@@ -256,16 +258,14 @@ def table_with_row_headers(
     # then an index or something which determined what type of row it was? Though that
     # might make things more clunky usage wise.
     if font_colors is None:
-        font_colors = cell_colors.applymap(
-            lambda _: plot_params.colors.color_table_font
-        )
+        font_colors = cell_colors.applymap(lambda _: plot_params.colors.table_font)
 
     # height/width of cells columns is consistent across all rows - typically the
     # row_header column will be wider to accomodate the explanation.
-    column_widths: list[float] = [plot_params.cell_sizes.text_col_width] + [
+    column_widths: list[float] = [plot_params.cell_sizes.row_header_col_width] + [
         plot_params.cell_sizes.numb_col_width
     ] * (len(cell_values.columns) - 1)
-    column_heights: list[float] = [plot_params.cell_sizes.text_col_height] + [
+    column_heights: list[float] = [plot_params.cell_sizes.row_header_col_height] + [
         plot_params.cell_sizes.numb_col_height
     ] * (len(cell_values.columns) - 1)
 
@@ -296,17 +296,17 @@ def table_with_row_headers(
         row_colors = (
             cell_colors.iloc[row_i, :].to_list()
             if not header_val
-            else [plot_params.colors.color_heading for _ in cell_values]
+            else [plot_params.colors.heading_cell for _ in cell_values]
         )
         row_font_color = (
             font_colors.iloc[row_i, :].to_list()
             if not header_val
-            else plot_params.colors.color_heading_font
+            else plot_params.colors.heading_font
         )
         row_font_size = (
-            plot_params.fontsizes.fontsize_table
+            plot_params.fontsizes.table
             if not header_val
-            else plot_params.fontsizes.fontsize_heading
+            else plot_params.fontsizes.heading
         )
         row_font_weight = (
             ["normal"] + (["bold"] * (cell_values.shape[1] - 1))
@@ -319,13 +319,12 @@ def table_with_row_headers(
             column_widths=column_widths,
             column_heights=column_heights,
             y_value=(
-                row_i * plot_params.cell_sizes.height
-                + plot_params.spacing.spacing_row * row_i
+                row_i * plot_params.cell_sizes.height + plot_params.spacing.row * row_i
             ),
             colors=row_colors,
             values=row_values,
             font_color=row_font_color,
-            cell_gap=plot_params.spacing.spacing_col,
+            cell_gap=plot_params.spacing.col,
             fontsize=row_font_size,
             patch_alpha=plot_params.plot_values.cell_alpha,
             display_offset=display_offset,
