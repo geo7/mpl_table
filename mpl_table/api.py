@@ -27,6 +27,8 @@ class FontSize:
 @dataclass
 class FontSettings:
     text_align = "left"
+    text_align_row_header = "left"
+    text_align_table = "center"
     fontweight = "normal"
 
 
@@ -63,6 +65,7 @@ class PlotValues:
 class PlotParams:
     colors = Colors()
     fontsizes = FontSize()
+    font_settings = FontSettings()
     spacing = Spacing()
     cell_sizes = CellSizes()
     plot_values = PlotValues()
@@ -283,7 +286,9 @@ def table_with_row_headers(
 
     # All value columns have text alignment center except for the row_header column,
     # which are left aligned.
-    text_align = ["left"] + ["center"] * (cell_values.shape[1] - 1)
+    text_align = [plot_params.font_settings.text_align_row_header] + [
+        plot_params.font_settings.text_align_table
+    ] * (cell_values.shape[1] - 1)
 
     for row_i, header_val in zip(row_indices, header_row_values):
         # Lot of if's here as the heading row (with column names) has different
