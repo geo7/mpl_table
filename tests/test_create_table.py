@@ -102,3 +102,43 @@ def test_table_image_no_font_color_df(
         plot_params=default,
     )
     return fig
+
+
+@pytest.mark.mpl_image_compare
+def test_table_with_no_row_headers(
+    cell_colors,
+    cell_values,
+    text_color,
+):
+    # Just want to get rid of the row_header column.
+    cell_colors = cell_colors.iloc[:, 1:]
+    font_colors = text_color.iloc[:, 1:]
+    cell_values = cell_values.iloc[:, 1:]
+
+    fig, ax = plt.subplots(figsize=(15, 5), ncols=1)
+    plot_params = mpl_table.PlotParams()
+
+    # Here we're removing the different settings between the row_header column and the
+    # rest of the table, typically there would be different font weights / alignment etc.
+    plot_params.cell_sizes.row_header_col_width = plot_params.cell_sizes.numb_col_width
+    plot_params.font_settings.text_align_row_header = (
+        plot_params.font_settings.text_align_table
+    )
+    plot_params.font_settings.fontweight_row_header = (
+        plot_params.font_settings.fontweight_table
+    )
+
+    plot_params.fontsizes.heading = 15
+    plot_params.fontsizes.table = 12
+
+    # this is the spacing from the left of the cell to the text.
+    plot_params.spacing.txt_disp_offset = plot_params.spacing.value_disp_offset
+
+    mpl_table.table_with_row_headers(
+        cell_colors=cell_colors,
+        cell_values=cell_values,
+        font_colors=font_colors,
+        ax=ax,
+        row_header="col_0",
+    )
+    return fig
