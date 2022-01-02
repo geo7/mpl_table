@@ -16,7 +16,14 @@ You'll probably want to use `bbox_inches="tight"` when you `fig.savefig`.
 ## Example output
 
 
+
+Table with row headers:
+
 ![Example output table.](./tests/baseline/test_table_image.png)
+
+Table with no row headers:
+
+![Example output table without row headers.](./tests/baseline/test_table_with_no_row_headers.png)
 
 ## Why
 
