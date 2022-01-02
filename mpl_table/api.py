@@ -30,6 +30,10 @@ class FontSettings:
     text_align_row_header = "left"
     text_align_table = "center"
     fontweight = "normal"
+    # Row header font weight is usually normal whereas the table cells have bold font.
+    fontweight_row_header = "normal"
+    fontweight_table = "bold"
+    fontweight_heading = "bold"
 
 
 @dataclass
@@ -314,9 +318,13 @@ def table_with_row_headers(
             else plot_params.fontsizes.heading
         )
         row_font_weight = (
-            ["normal"] + (["bold"] * (cell_values.shape[1] - 1))
+            [plot_params.font_settings.fontweight_row_header]
+            + (
+                [plot_params.font_settings.fontweight_table]
+                * (cell_values.shape[1] - 1)
+            )
             if not header_val
-            else ["bold"] * cell_values.shape[1]
+            else [plot_params.font_settings.fontweight_heading] * cell_values.shape[1]
         )
 
         plot_row(
