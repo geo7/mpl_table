@@ -15,15 +15,21 @@ You'll probably want to use `bbox_inches="tight"` when you `fig.savefig`.
 
 ## Example output
 
-
-
 Table with row headers:
 
 ![Example output table.](./tests/baseline/test_table_image.png)
 
+Table in subplots:
+
+![Example output in subplots.](./tests/baseline/test_subplots_1.png)
+
 Table with no row headers:
 
 ![Example output table without row headers.](./tests/baseline/test_table_with_no_row_headers.png)
+
+Table with no row or column headers:
+
+![Example output table without row or column headers.](./tests/baseline/test_table_with_no_row_headers_and_no_column_headers.png)
 
 ## Why
 
@@ -35,12 +41,9 @@ red).
 
 ## TODO
 
-Some additional examples of customisation. Currently the sizing of the output table isn't
-dynamic, for some tables one might have to adjust the figsize in order for things to fit
-well, and be mindful of the amount of text used in row meaning text column.
+Simplify creating a table without any row-headers.
 
-Usage within subplots, wasn't required for what was needed, but there could be some use
-in having subplots with these tables.
+Consider makign the spacing for rows/cols dynamic, based on figsize might work.
 
 Different styles - might want to have the header row / row information column without any
 background colour, or similar stylings. Shouldn't be hard to do from what's here, just
