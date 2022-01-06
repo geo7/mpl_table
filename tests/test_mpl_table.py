@@ -2,4 +2,4 @@ from mpl_table import __version__
 
 
 def test_version() -> None:
-    assert __version__ == "0.1.5"
+    assert __version__ == "0.1.6"
