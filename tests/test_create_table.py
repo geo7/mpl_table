@@ -80,7 +80,6 @@ def test_table_image(
         ax=ax,
         cell_colors=cell_colors,
         cell_values=cell_values,
-        row_header="row_header",
         font_colors=text_color,
         plot_params=default,
     )
@@ -98,7 +97,6 @@ def test_table_image_no_font_color_df(
         ax=ax,
         cell_colors=cell_colors,
         cell_values=cell_values,
-        row_header="row_header",
         plot_params=default,
     )
     return fig
@@ -139,6 +137,91 @@ def test_table_with_no_row_headers(
         cell_values=cell_values,
         font_colors=font_colors,
         ax=ax,
-        row_header="col_0",
     )
+    return fig
+
+
+@pytest.mark.mpl_image_compare
+def test_table_with_no_row_headers_and_no_column_headers(
+    cell_colors,
+    cell_values,
+    text_color,
+):
+
+    cell_colors = cell_colors.iloc[1:, 1:]
+    font_colors = text_color.iloc[1:, 1:]
+    cell_values = cell_values.iloc[1:, 1:]
+
+    fig, ax = plt.subplots(figsize=(6, 6), ncols=1)
+
+    plot_params = mpl_table.PlotParams()
+    plot_params.cell_sizes.row_header_col_width = plot_params.cell_sizes.numb_col_width
+    plot_params.font_settings.text_align_row_header = (
+        plot_params.font_settings.text_align_table
+    )
+    plot_params.font_settings.fontweight_row_header = (
+        plot_params.font_settings.fontweight_table
+    )
+    plot_params.fontsizes.heading = 10
+    plot_params.fontsizes.table = 7
+    # this is the spacing from the left of the cell to the text.
+    plot_params.spacing.txt_disp_offset = plot_params.spacing.value_disp_offset
+    plot_params.display_options.column_headers = False
+    plot_params.spacing.row = plot_params.spacing.col
+
+    mpl_table.table_with_row_headers(
+        cell_colors=cell_colors,
+        cell_values=cell_values,
+        font_colors=font_colors,
+        ax=ax,
+    )
+    return fig
+
+
+@pytest.mark.mpl_image_compare
+def test_subplots_1(
+    cell_colors,
+    cell_values,
+    text_color,
+):
+    cell_colors = cell_colors.iloc[1:, 1:]
+    font_colors = text_color.iloc[1:, 1:]
+    cell_values = cell_values.iloc[1:, 1:]
+
+    fig, axis = plt.subplots(figsize=(16, 6), ncols=2)
+
+    ax = axis[0]
+    plot_params = mpl_table.PlotParams()
+    plot_params.cell_sizes.row_header_col_width = plot_params.cell_sizes.numb_col_width
+    plot_params.font_settings.text_align_row_header = (
+        plot_params.font_settings.text_align_table
+    )
+    plot_params.fontsizes.heading = 10
+    plot_params.fontsizes.table = 12
+    plot_params.font_settings.fontweight_table = "normal"
+    plot_params.font_settings.fontweight_row_header = "normal"
+    plot_params.spacing.txt_disp_offset = plot_params.spacing.value_disp_offset
+    plot_params.display_options.column_headers = False
+    plot_params.spacing.row = plot_params.spacing.col
+    mpl_table.table_with_row_headers(
+        cell_colors=cell_colors,
+        cell_values=cell_values,
+        font_colors=font_colors,
+        ax=ax,
+    )
+
+    ax = axis[1]
+    np_random = np.random.default_rng(1)
+    (
+        pd.DataFrame(
+            [np.arange(0, 10) + np_random.normal(2, 0.5, 10) for _ in range(3)],
+        ).T.plot(
+            ax=ax,
+            color=["red", "green", "gray"],
+            linewidth=3,
+            alpha=0.65,
+        )
+    )
+    ax.grid(0.2, alpha=0.2)
+    fig.suptitle("Some Subplots", fontsize=25)
     return fig
