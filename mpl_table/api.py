@@ -66,6 +66,11 @@ class PlotValues:
 
 
 @dataclass
+class DisplayOptions:
+    column_headers = True
+
+
+@dataclass
 class PlotParams:
     colors = Colors()
     fontsizes = FontSize()
@@ -73,6 +78,7 @@ class PlotParams:
     spacing = Spacing()
     cell_sizes = CellSizes()
     plot_values = PlotValues()
+    display_options = DisplayOptions()
 
 
 class TableCell:  # pylint: disable=too-many-instance-attributes
@@ -228,10 +234,6 @@ def table_with_row_headers(
     font_colors: pd.DataFrame | None = None,
     ax: plt.Axes,
     plot_params: PlotParams = PlotParams(),
-    # Currently need to pass the row_header column as there are some things handled
-    # differently depending on whether it's the row_header column or not (row_header
-    # column will typically have different dimensions to the rest of the columns).
-    row_header: str,
 ) -> plt.Axes:
     """
     Create custom table.
@@ -251,12 +253,6 @@ def table_with_row_headers(
                 f"cell_values.columns : {cell_values.columns}, "
                 f"cell_colors.columns : {cell_colors.columns}"
             )
-        )
-    if not cell_values.columns[0] == row_header:
-        raise ValueError(
-            "Expect the first column to be the row_header column, "
-            f"row_header given is {row_header}, first"
-            f" column is {cell_values.columns[0]}"
         )
 
     # Should consider making this access more consistent as there's currently the case of
@@ -295,6 +291,9 @@ def table_with_row_headers(
     ] * (cell_values.shape[1] - 1)
 
     for row_i, header_val in zip(row_indices, header_row_values):
+        if header_val and not plot_params.display_options.column_headers:
+            # If not plotting the column headers then just break here.
+            break
         # Lot of if's here as the heading row (with column names) has different
         # formatting to the rest... there's probably a cleaner way of going about this.
         row_values = (
