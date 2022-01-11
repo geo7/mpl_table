@@ -19,17 +19,13 @@ Table with row headers:
 
 ![Example output table.](./tests/baseline/test_table_image.png)
 
-Table in subplots:
+Table in subplots (without row or column headers):
 
 ![Example output in subplots.](./tests/baseline/test_subplots_1.png)
 
 Table with no row headers:
 
 ![Example output table without row headers.](./tests/baseline/test_table_with_no_row_headers.png)
-
-Table with no row or column headers:
-
-![Example output table without row or column headers.](./tests/baseline/test_table_with_no_row_headers_and_no_column_headers.png)
 
 ## Why
 
