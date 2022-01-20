@@ -1,7 +1,8 @@
 """Create table using Matplotlib."""
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import InitVar, dataclass, field
+from typing import cast
 
 import matplotlib as mpl
 import matplotlib.pyplot as plt
@@ -13,110 +14,125 @@ import pandas as pd
 # Default parameters.
 @dataclass
 class Colors:
-    heading_cell = "red"
-    heading_font = "white"
-    table_font = "black"
+    heading_cell: str
+    heading_font: str
+    table_font: str
 
 
 @dataclass
 class FontSize:
-    heading = 25
-    table = 18
+    heading: int
+    table: int
 
 
 @dataclass
 class FontSettings:
-    text_align = "left"
-    text_align_row_header = "left"
-    text_align_table = "center"
-    fontweight = "normal"
+    text_align: str
+    text_align_row_header: str
+    text_align_table: str
+    fontweight: str
     # Row header font weight is usually normal whereas the table cells have bold font.
-    fontweight_row_header = "normal"
-    fontweight_table = "bold"
-    fontweight_heading = "bold"
+    fontweight_row_header: str
+    fontweight_table: str
+    fontweight_heading: str
 
 
 @dataclass
 class Spacing:
-    row = 0.03
-    col = 0.01
+    row: float
+    col: float
     # These are offsets for different column types - if it's a row_header column the text
     # should be flush to the left of the cell, whereas the others (eg percentages within
     # the rest of the data) will be centered within the cell rather than left aligned.
-    txt_disp_offset = 0.02
-    value_disp_offset = 0.5
+    txt_disp_offset: float
+    value_disp_offset: float
 
 
 @dataclass
 class CellSizes:
-    row_header_col_width = 1.0
+    row_header_col_width: float
     # Not sure there would ever be any sense in there being different heights for the
     # row_header and other cells here, it would render pretty oddly as a table.
-    row_header_col_height = 0.5
-    numb_col_height = 0.5
-    numb_col_width = 0.4
-    height = 0.5
+    row_header_col_height: float
+    numb_col_height: float
+    numb_col_width: float
+    height: float
 
 
 @dataclass
 class PlotValues:
     # Feel there's a better name than "PlotValues" for this, "CellValues" might be
     # clearer.
-    cell_alpha = 0.85
+    cell_alpha: float
 
 
 @dataclass
 class DisplayOptions:
-    column_headers = True
+    column_headers: bool
 
 
 @dataclass
 class PlotParams:
-    colors = Colors()
-    fontsizes = FontSize()
-    font_settings = FontSettings()
-    spacing = Spacing()
-    cell_sizes = CellSizes()
-    plot_values = PlotValues()
-    display_options = DisplayOptions()
+    colors = Colors(
+        heading_cell="red",
+        heading_font="white",
+        table_font="black",
+    )
+    fontsizes = FontSize(
+        heading=25,
+        table=18,
+    )
+    font_settings = FontSettings(
+        text_align="left",
+        text_align_row_header="left",
+        text_align_table="center",
+        fontweight="normal",
+        fontweight_row_header="normal",
+        fontweight_table="bold",
+        fontweight_heading="bold",
+    )
+    spacing = Spacing(
+        row=0.03,
+        col=0.01,
+        txt_disp_offset=0.02,
+        value_disp_offset=0.5,
+    )
+    cell_sizes = CellSizes(
+        row_header_col_width=1.0,
+        row_header_col_height=0.5,
+        numb_col_height=0.5,
+        numb_col_width=0.4,
+        height=0.5,
+    )
+    plot_values = PlotValues(cell_alpha=0.85)
+    display_options = DisplayOptions(column_headers=True)
 
 
+@dataclass
 class TableCell:  # pylint: disable=too-many-instance-attributes
     """Class representing a cell within the output table."""
 
-    def __init__(
-        self,
-        width: float,
-        height: float,
-        x_pos: float,
-        y_pos: float,
-        color: str,
-        value: str,
-        font_color: str,
-        display_x_offset: float,
-        display_y_offset: float,
-        text_align: str,
-        fontweight: str,
-        fontsize: int,
-        patch_alpha: float,
-    ):
-        self.width = width
-        self.height = height
-        self.x_pos = x_pos
-        self.y_pos = y_pos
-        self.color = color
-        self.value = value
+    width: float
+    height: float
+    x_pos: float
+    y_pos: float
+    color: str
+    value: str
+    patch_alpha: float
+    font_color: str
+    text_align: str
+    fontweight: str
+    fontsize: int
 
-        self.patch_alpha = patch_alpha
-        self.font_color = font_color
-        # Text positioning - this will change depending on whether the cell is a text
-        # cell or a value cell
-        self.text_x_pos = x_pos + (display_x_offset * width)
-        self.text_y_pos = y_pos + (display_y_offset * height)
-        self.text_align = text_align
+    display_x_offset: InitVar[float]
+    display_y_offset: InitVar[float]
 
-        self.fontweight = fontweight
-        self.fontsize = fontsize
+    text_x_pos: float = field(default=cast(float, None), init=False)
+    text_y_pos: float = field(default=cast(float, None), init=False)
+
+    def __post_init__(self, display_x_offset: float, display_y_offset: float) -> None:
+        self.text_x_pos = self.x_pos + (display_x_offset * self.width)
+        self.text_y_pos = self.y_pos + (display_y_offset * self.height)
 
     def draw(self, *, ax: plt.Axes) -> None:
         ax.add_patch(
